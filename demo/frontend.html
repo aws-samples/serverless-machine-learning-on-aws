@@ -1,0 +1,53 @@
+<html>
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <style>
+                body {margin: 6pt; text-align: center;}
+                .form-control {max-width: 500px; margin: auto}
+                #img_detected img {margin: auto}
+        </style>
+        <title>MXNet Object Detector</title>
+    </head>
+    <body>
+    <h1>MXNet Object Detector</h1>
+    <div class="form-group">
+        <label>Input the URL of a JPEG image:</label>
+        <input type="url" class="form-control" id="img_url" value="http://farm3.staticflickr.com/2261/2274764631_f7f659624f_z.jpg">
+        <button type="submit" class="btn btn-primary"  style='margin-top:6pt' onclick='submit()'>Submit</button>
+    </div>
+    <div id='img_detected'>
+    </div>
+    <script type="text/Javascript">
+        function submit() {
+            pred = document.getElementById("img_detected")
+            var obj_url = document.getElementById("img_url").value
+            pred.innerHTML = "<h2>Loading...</h2>";
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 400) { pred.innerHTML = "<h2>Please input the url of a valid image.</h2>"; } 
+                    else if (xhr.status === 200) { pred.innerHTML = "<img style='max-width:100%; display:block;' id='base64image'   src='data:image/jpeg;base64, " + xhr.response + "' />"; } 
+                    else { pred.innerHTML = "<h2>Error</h2>"; }
+                }
+            }
+
+            xhr.open("POST", 'API_GATEWAY_ENDPOINT_URL', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify({
+                img_url: obj_url
+            }));
+        }
+        submit();
+        document.getElementById('img_url').onkeydown = function(e){
+            if(e.keyCode == 13){
+                submit()
+            }
+        };
+    </script>
+</body>
+</html>
