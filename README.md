@@ -1,4 +1,4 @@
-# Serverless Machine Learning
+## Serverless Machine Learning On AWS
 
 The ```template.json``` file is an AWS CloudFormation template that builds the following serverless components:
 
@@ -15,3 +15,7 @@ In order to complete launch the template you'll need an [AWS Account](https://si
 Region| Launch
 ------|-----
 US East (N. Virginia) | [![Launch Serverless ML in us-east-1](imgs/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=serverless-ml&templateURL=https://serverless-machine-learning-on-aws.s3.amazonaws.com/template.json)
+
+## License
+
+This library is licensed under the Apache 2.0 License. 
