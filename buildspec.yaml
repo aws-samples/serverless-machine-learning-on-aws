@@ -1,10 +1,12 @@
 version: 0.2
 phases:
+  install:
+    runtime-versions:
+        python: 3.7
   build:
     commands:
       - cd /root
       - mkdir -p mxnet/python pillow/python keras/python scipy/python gluoncv/python gluonnlp/python xgboost/python sklearn/python numpy/python
-      - yum install -y python3 python3-wheel
       - python3 -m pip install --user pip --upgrade
       - python3 -m pip install --user virtualenv
       - python3 -m virtualenv MXNet
