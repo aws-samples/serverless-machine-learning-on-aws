@@ -14,7 +14,7 @@ In order to complete launch the template you'll need an [AWS Account](https://si
 
 Region| Launch
 ------|-----
-US East (N. Virginia) | [![Launch Serverless ML in us-east-1](imgs/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=serverless-ml&templateURL=https://serverless-deep-learning-template.s3.amazonaws.com/template.json)
+US East (N. Virginia) | [![Launch Serverless ML in us-east-1](imgs/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=serverless-ml&templateURL=https://aws-ml-blog.s3.amazonaws.com/artifacts/serverless-machine-learning-on-aws/template.json)
 
 ## License
 
