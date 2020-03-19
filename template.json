@@ -527,11 +527,7 @@
                                 "   else:",
                                 "      status = 'SUCCESS'",
                                 "      response_data = 'NA'",
-                                "   send(event, context, status, {'result': response_data}, pool_manager=http)",
-                                "   return {",
-                                "    'statusCode': 200,",
-                                "       'body': str(response)",
-                                "    }"
+                                "   send(event, context, status, {'result': response_data}, pool_manager=http)"
                             ]
                         ]
                     }
