@@ -19,6 +19,32 @@
             "Description": "Enter a URL for the static frontend code."
         }
     },
+    "Mappings" : {
+        "RegionMap" : {
+            "ap-northeast-1": {"RequestsLayer": "arn:aws:lambda:ap-northeast-1:249908578461:layer:AWSLambda-Python-AWS-SDK:5"},
+            "us-east-1": {"RequestsLayer": "arn:aws:lambda:us-east-1:668099181075:layer:AWSLambda-Python-AWS-SDK:5"},
+            "ap-southeast-1": {"RequestsLayer": "arn:aws:lambda:ap-southeast-1:468957933125:layer:AWSLambda-Python-AWS-SDK:5"},
+            "eu-west-1": {"RequestsLayer": "arn:aws:lambda:eu-west-1:399891621064:layer:AWSLambda-Python-AWS-SDK:5"},
+            "us-west-1": {"RequestsLayer": "arn:aws:lambda:us-west-1:325793726646:layer:AWSLambda-Python-AWS-SDK:5"},
+            "ap-east-1": {"RequestsLayer": "arn:aws:lambda:ap-east-1:118857876118:layer:AWSLambda-Python-AWS-SDK:5"},
+            "ap-northeast-2": {"RequestsLayer": "arn:aws:lambda:ap-northeast-2:296580773974:layer:AWSLambda-Python-AWS-SDK:5"},
+            "ap-northeast-3": {"RequestsLayer": "arn:aws:lambda:ap-northeast-3:961244031340:layer:AWSLambda-Python-AWS-SDK:5"},
+            "ap-south-1": {"RequestsLayer": "arn:aws:lambda:ap-south-1:631267018583:layer:AWSLambda-Python-AWS-SDK:5"},
+            "ap-southeast-2": {"RequestsLayer": "arn:aws:lambda:ap-southeast-2:817496625479:layer:AWSLambda-Python-AWS-SDK:5"},
+            "ca-central-1": {"RequestsLayer": "arn:aws:lambda:ca-central-1:778625758767:layer:AWSLambda-Python-AWS-SDK:5"},
+            "eu-central-1": {"RequestsLayer": "arn:aws:lambda:eu-central-1:292169987271:layer:AWSLambda-Python-AWS-SDK:5"},
+            "eu-north-1": {"RequestsLayer": "arn:aws:lambda:eu-north-1:642425348156:layer:AWSLambda-Python-AWS-SDK:5"},
+            "eu-west-2": {"RequestsLayer": "arn:aws:lambda:eu-west-2:142628438157:layer:AWSLambda-Python-AWS-SDK:5"},
+            "eu-west-3": {"RequestsLayer": "arn:aws:lambda:eu-west-3:959311844005:layer:AWSLambda-Python-AWS-SDK:5"},
+            "sa-east-1": {"RequestsLayer": "arn:aws:lambda:sa-east-1:640010853179:layer:AWSLambda-Python-AWS-SDK:5"},
+            "us-east-2": {"RequestsLayer": "arn:aws:lambda:us-east-2:259788987135:layer:AWSLambda-Python-AWS-SDK:5"},
+            "us-west-2": {"RequestsLayer": "arn:aws:lambda:us-west-2:420165488524:layer:AWSLambda-Python-AWS-SDK:6"},
+            "cn-north-1": {"RequestsLayer": "arn:aws-cn:lambda:cn-north-1:683298794825:layer:AWSLambda-Python-AWS-SDK:5"},
+            "cn-northwest-1": {"RequestsLayer": "arn:aws-cn:lambda:cn-northwest-1:382066503313:layer:AWSLambda-Python-AWS-SDK:5"},
+            "us-gov-west": {"RequestsLayer": "arn:aws-us-gov:lambda:us-gov-west-1:556739011827:layer:AWSLambda-Python-AWS-SDK:5"},
+            "us-gov-east": {"RequestsLayer": "arn:aws-us-gov:lambda:us-gov-east-1:138526772879:layer:AWSLambda-Python-AWS-SDK:5"}
+        }
+    },
     "Resources": {
         "ECRRole": {
             "Type": "AWS::IAM::Role",
@@ -301,8 +327,7 @@
                 "Description": "Build zipped Lambda Layer packages for machine learning.",
                 "Environment": {
                     "ComputeType": "BUILD_GENERAL1_SMALL",
-                    "Image": "137112412989.dkr.ecr.us-west-2.amazonaws.com/amazonlinux:latest",
-                    "ImagePullCredentialsType": "SERVICE_ROLE",
+                    "Image": "aws/codebuild/amazonlinux2-x86_64-standard:1.0",
                     "Type": "LINUX_CONTAINER"
                 },
                 "LogsConfig": {
@@ -427,10 +452,37 @@
                         "Fn::Join": [
                             "\n",
                             [
-                                "import cfnresponse",
-                                "from botocore.vendored import requests",
+                                "import time",
+                                "import urllib3",
                                 "import os",
                                 "import boto3",
+                                "import json",
+                                "http = urllib3.PoolManager()",
+                                "def send(event, context, responseStatus, responseData, pool_manager, physicalResourceId=None, noEcho=False):",
+                                "   responseUrl = event['ResponseURL']",
+                                "   responseBody = {}",
+                                "   responseBody['Status'] = responseStatus",
+                                "   responseBody['Reason'] = 'See the details in CloudWatch Log Stream: ' + context.log_stream_name",
+                                "   responseBody['PhysicalResourceId'] = physicalResourceId or context.log_stream_name",
+                                "   responseBody['StackId'] = event['StackId']",
+                                "   responseBody['RequestId'] = event['RequestId']",
+                                "   responseBody['LogicalResourceId'] = event['LogicalResourceId']",
+                                "   responseBody['NoEcho'] = noEcho",
+                                "   responseBody['Data'] = responseData",
+                                "   json_responseBody = json.dumps(responseBody)",
+                                "   print('Response body:' + json_responseBody)",
+                                "   headers = {",
+                                "       'content-type' : '',",
+                                "       'content-length' : str(len(json_responseBody))",
+                                "   }",
+                                "   try:",
+                                "       response = pool_manager.request('PUT',",
+                                "                               responseUrl,",
+                                "                               body=json_responseBody,",
+                                "                               headers=headers)",
+                                "       print('Status code: ' + str(response.status))",
+                                "   except Exception as e:",
+                                "       print('send(..) failed executing request: ' + str(e))",
                                 "def build(event, context):",
                                 "   if event['RequestType'] == 'Create':",
                                 "      s3 = boto3.resource('s3')",
@@ -450,7 +502,7 @@
                                     "Fn::Join": [
                                         "",
                                         [
-                                            "      response = requests.get('",
+                                            "      response = http.request('GET','",
                                             {
                                                 "Ref": "InferenceCode"
                                             },
@@ -459,22 +511,23 @@
                                     ]
                                 },
                                 "      object = s3.Object(lambda_layers, 'demo/inference.zip')",
-                                "      object.put(Body=response.content, ContentType='application/zip')",
+                                "      object.put(Body=response.data, ContentType='application/zip')",
                                 "      client = boto3.client('codebuild')",
                                 "      response = client.start_build(projectName=os.environ['PROJECT_NAME'])",
                                 "      response = client.batch_get_builds(ids=[response['build']['id']])",
                                 "      while response['builds'][0]['buildStatus'] == 'IN_PROGRESS':",
                                 "          response = client.batch_get_builds(ids=[response['builds'][0]['id']])",
+                                "          time.sleep(5)",
                                 "      response_data = 'FAILED'",
                                 "      if response['builds'][0]['buildStatus'] == 'SUCCEEDED':",
-                                "          status = cfnresponse.SUCCESS",
+                                "          status = 'SUCCESS'",
                                 "          response_data = 'SUCCESS'",
                                 "      else:",
-                                "          status = cfnresponse.FAILED",
+                                "          status = 'FAILED'",
                                 "   else:",
-                                "      status = cfnresponse.SUCCESS",
+                                "      status = 'SUCCESS'",
                                 "      response_data = 'NA'",
-                                "   cfnresponse.send(event, context, status, {'result': response_data})",
+                                "   send(event, context, status, {'result': response_data}, pool_manager=http)",
                                 "   return {",
                                 "    'statusCode': 200,",
                                 "       'body': str(response)",
@@ -484,6 +537,9 @@
                     }
                 },
                 "Handler": "index.build",
+                "Layers": [
+                    { "Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "RequestsLayer"]}
+                ],
                 "Runtime": "python3.7",
                 "Timeout": "600",
                 "Role": {
@@ -707,6 +763,7 @@
                     {
                         "Ref": "GluonCVLayer"
                     }
+                    
                 ],
                 "MemorySize": 3008
             }
@@ -1027,10 +1084,35 @@
                             [
                                 "import json",
                                 "import boto3",
-                                "import cfnresponse",
                                 "import zipfile",
-                                "from botocore.vendored import requests",
+                                "import urllib3",
                                 "s3 = boto3.resource('s3')",
+                                "http = urllib3.PoolManager()",
+                                "def send(event, context, responseStatus, responseData, pool_manager, physicalResourceId=None, noEcho=False):",
+                                "   responseUrl = event['ResponseURL']",
+                                "   responseBody = {}",
+                                "   responseBody['Status'] = responseStatus",
+                                "   responseBody['Reason'] = 'See the details in CloudWatch Log Stream: ' + context.log_stream_name",
+                                "   responseBody['PhysicalResourceId'] = physicalResourceId or context.log_stream_name",
+                                "   responseBody['StackId'] = event['StackId']",
+                                "   responseBody['RequestId'] = event['RequestId']",
+                                "   responseBody['LogicalResourceId'] = event['LogicalResourceId']",
+                                "   responseBody['NoEcho'] = noEcho",
+                                "   responseBody['Data'] = responseData",
+                                "   json_responseBody = json.dumps(responseBody)",
+                                "   print('Response body:' + json_responseBody)",
+                                "   headers = {",
+                                "       'content-type' : '',",
+                                "       'content-length' : str(len(json_responseBody))",
+                                "   }",
+                                "   try:",
+                                "       response = pool_manager.request('PUT',",
+                                "                               responseUrl,",
+                                "                               body=json_responseBody,",
+                                "                               headers=headers)",
+                                "       print('Status code: ' + str(response.status))",
+                                "   except Exception as e:",
+                                "       print('send(..) failed executing request: ' + str(e))",
                                 "def delete_all(bucket_name):",
                                 "    bucket = s3.Bucket(bucket_name)",
                                 "    bucket.object_versions.delete()",
@@ -1068,7 +1150,7 @@
                                     "Fn::Join": [
                                         "",
                                         [
-                                            "            response = requests.get('",
+                                            "            response = http.request('GET','",
                                             {
                                                 "Ref": "FrontendCode"
                                             },
@@ -1076,7 +1158,7 @@
                                         ]
                                     ]
                                 },
-                                "            text = response.content.decode('utf-8')",
+                                "            text = response.data.decode('utf-8')",
                                 {
                                     "Fn::Join": [
                                         "",
@@ -1095,10 +1177,10 @@
                                 },
                                 "            object = s3.Object(front_end, 'frontend.html')",
                                 "            object.put(Body=text.encode(), ContentType='text/html')",
-                                "        cfnresponse.send(event, context, cfnresponse.SUCCESS, {'result': 'SUCCESS'})",
+                                "        send(event, context, 'SUCCESS', {'result': 'SUCCESS'}, http)",
                                 "    except Exception as e:",
                                 "        print(e)",
-                                "        cfnresponse.send(event, context, cfnresponse.FAILED, {'result': 'FAILED'})"
+                                "        send(event, context, 'FAILED', {'result': 'FAILED'}, http)"
                             ]
                         ]
                     }
@@ -1106,6 +1188,9 @@
                 "Handler": "index.cleanup",
                 "Runtime": "python3.7",
                 "Timeout": "600",
+                "Layers": [
+                    { "Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "RequestsLayer"]}
+                ],
                 "Role": {
                     "Fn::GetAtt": [
                         "S3CleanupRole",
