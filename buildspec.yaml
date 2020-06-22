@@ -11,14 +11,14 @@ phases:
       - python3 -m pip install --user virtualenv
       - python3 -m virtualenv MXNet
       - source MXNet/bin/activate
-      - pip install mxnet==1.4.0.post0
+      - pip install mxnet==1.7.0.post0
       - rm -rf $(find MXNet/lib/python3.7/site-packages/numpy -name tests)
       - cp -r MXNet/lib/python3.7/site-packages/* mxnet/python
       - rm -rf mxnet/python/pip*
       - rm -rf mxnet/python/wheel*
       - rm -rf mxnet/python/setuptools*
       - rm -rf mxnet/python/pkg_resources
-      - pip install keras-mxnet==2.2.4.1 Pillow==6.0.0 gluonnlp==0.6.0 gluoncv==0.4.0.post0 scikit-learn==0.21.3 matplotlib==3.0.3 six==1.12.0 cycler==0.10.0 kiwisolver==1.1.0 pyparsing==2.4.0
+      - pip install keras-mxnet==2.2.4.2 Pillow==7.0.0 gluonnlp==0.9.0 gluoncv==0.7.0.post0 scikit-learn==0.23.1 matplotlib==3.2.2 six==1.14.0 cycler==0.10.0 kiwisolver==1.2.0 pyparsing==3.0.0
       - rm -rf $(find MXNet/lib/python3.7/site-packages/ -name tests)
       - cp -r MXNet/lib/python3.7/site-packages/six* keras/python
       - cp -r MXNet/lib/python3.7/site-packages/h5py* keras/python
