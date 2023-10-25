@@ -536,7 +536,7 @@
                 "Layers": [
                     { "Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "RequestsLayer"]}
                 ],
-                "Runtime": "python3.7",
+                "Runtime": "python3.10",
                 "Timeout": "600",
                 "Role": {
                     "Fn::GetAtt": [
@@ -561,7 +561,7 @@
             "Type": "AWS::Lambda::LayerVersion",
             "Properties": {
                 "CompatibleRuntimes": [
-                    "python3.7"
+                    "python3.10"
                 ],
                 "Content": {
                     "S3Bucket": {
@@ -580,7 +580,7 @@
             "Type": "AWS::Lambda::LayerVersion",
             "Properties": {
                 "CompatibleRuntimes": [
-                    "python3.7"
+                    "python3.10"
                 ],
                 "Content": {
                     "S3Bucket": {
@@ -599,7 +599,7 @@
             "Type": "AWS::Lambda::LayerVersion",
             "Properties": {
                 "CompatibleRuntimes": [
-                    "python3.7"
+                    "python3.10"
                 ],
                 "Content": {
                     "S3Bucket": {
@@ -618,7 +618,7 @@
             "Type": "AWS::Lambda::LayerVersion",
             "Properties": {
                 "CompatibleRuntimes": [
-                    "python3.7"
+                    "python3.10"
                 ],
                 "Content": {
                     "S3Bucket": {
@@ -637,7 +637,7 @@
             "Type": "AWS::Lambda::LayerVersion",
             "Properties": {
                 "CompatibleRuntimes": [
-                    "python3.7"
+                    "python3.10"
                 ],
                 "Content": {
                     "S3Bucket": {
@@ -656,7 +656,7 @@
             "Type": "AWS::Lambda::LayerVersion",
             "Properties": {
                 "CompatibleRuntimes": [
-                    "python3.7"
+                    "python3.10"
                 ],
                 "Content": {
                     "S3Bucket": {
@@ -675,7 +675,7 @@
             "Type": "AWS::Lambda::LayerVersion",
             "Properties": {
                 "CompatibleRuntimes": [
-                    "python3.7"
+                    "python3.10"
                 ],
                 "Content": {
                     "S3Bucket": {
@@ -738,7 +738,7 @@
                     "S3Key": "demo/inference.zip"
                 },
                 "Handler": "inference.lambda_handler",
-                "Runtime": "python3.7",
+                "Runtime": "python3.10",
                 "Timeout": "120",
                 "Role": {
                     "Fn::GetAtt": [
@@ -1182,7 +1182,7 @@
                     }
                 },
                 "Handler": "index.cleanup",
-                "Runtime": "python3.7",
+                "Runtime": "python3.10",
                 "Timeout": "600",
                 "Layers": [
                     { "Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "RequestsLayer"]}
